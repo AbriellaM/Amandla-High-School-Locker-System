@@ -1,0 +1,103 @@
+<?php
+require __DIR__ . '/../PHPMailer/src/Exception.php';
+require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
+require __DIR__ . '/../PHPMailer/src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+/**
+ * Core mailer function
+ */
+function sendMail($to, $subject, $htmlBody) {
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host       = 'amandlahighschoollockersystem2@gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'amandlahighschoollockersystem@gmail.com';      // your Gmail
+        $mail->Password   = 'rihh rxag gabw lque';         // App Password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+
+        $mail->setFrom('your_email@gmail.com', 'Amandla Locker System');
+        $mail->addAddress($to);
+
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $htmlBody;
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * 1. Acknowledgment Email
+ */
+function sendAcknowledgment($to, $studentName, $studentGrade) {
+    $subject = "Locker Application Received – Amandla High School";
+    $body = "
+        <h2>Locker Application Acknowledgment</h2>
+        <p>Dear Parent/Guardian,</p>
+        <p>We confirm that we have received your application for a school locker for your child. 
+        The following details have been recorded:</p>
+        <ul>
+          <li><strong>Student Name:</strong> {$studentName}</li>
+          <li><strong>Grade:</strong> {$studentGrade}</li>
+        </ul>
+        <p>Our administration team will process the application and keep you informed of any updates.</p>
+        <p>Kind regards,<br>Amandla High School Locker Administration</p>
+    ";
+    return sendMail($to, $subject, $body);
+}
+
+/**
+ * 2. Payment Reminder Email
+ */
+function sendPaymentReminder($to, $studentName, $studentGrade) {
+    $subject = "Locker Application Pending – Payment Required";
+    $body = "
+        <h2>Locker Application – Payment Required</h2>
+        <p>Dear Parent/Guardian,</p>
+        <p>We have received your application for a school locker for your child. 
+        However, please note that a locker <strong>cannot be allocated</strong> until the required 
+        <strong>R100 locker fee</strong> has been paid.</p>
+        <p><strong>Student Details:</strong></p>
+        <ul>
+          <li><strong>Name:</strong> {$studentName}</li>
+          <li><strong>Grade:</strong> {$studentGrade}</li>
+        </ul>
+        <p><strong>Next Steps:</strong></p>
+        <ul>
+          <li>Please arrange payment of the R100 locker fee at the school office or via the approved payment method.</li>
+          <li>Once payment is confirmed, you will receive a follow‑up email with the assigned locker number.</li>
+        </ul>
+        <p>Thank you for your cooperation and support.</p>
+        <p>Kind regards,<br>Amandla High School Locker Administration</p>
+    ";
+    return sendMail($to, $subject, $body);
+}
+
+/**
+ * 3. Allocation Confirmation Email
+ */
+function sendAllocationNotice($to, $studentName, $studentGrade, $lockerNumber) {
+    $subject = "Locker Allocation Confirmed – Amandla High School";
+    $body = "
+        <h2>Locker Allocation Confirmed</h2>
+        <p>Dear Parent/Guardian,</p>
+        <p>We are pleased to inform you that a locker has been allocated to your child. 
+        Here are the details:</p>
+        <ul>
+          <li><strong>Student Name:</strong> {$studentName}</li>
+          <li><strong>Grade:</strong> {$studentGrade}</li>
+          <li><strong>Locker Number:</strong> {$lockerNumber}</li>
+        </ul>
+        <p>The locker is now available for use. Please remind your child to keep their belongings secure.</p>
+        <p>Kind regards,<br>Amandla High School Locker Administration</p>
+    ";
+    return sendMail($to, $subject, $body);
+}
